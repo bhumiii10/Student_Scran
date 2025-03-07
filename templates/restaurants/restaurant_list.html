@@ -1,22 +1,22 @@
-
 {% extends 'base.html' %}
-
 {% load static %}
 
 {% block content %}
-<!-- Hero Section -->
-<div class="hero-section text-center py-5 bg-primary text-white">
-    <h1 class="display-4">Welcome to Student Scran!</h1>
-    <p class="lead">Find the best student deals on food near you.</p>
-    <a href="{% url 'restaurant_list' %}" class="btn btn-light btn-lg">Explore Restaurants</a>
-    <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">Login</a>
-</div>
-
-<!-- Featured Restaurants Section -->
 <div class="container mt-5">
-    <h2 class="text-center mb-4">Featured Restaurants</h2>
+    <h2 class="text-center mb-4">Restaurants</h2>
+    <form method="get" class="mb-4">
+        <div class="input-group">
+            <select name="tag" class="form-select">
+                <option value="">All</option>
+                <option value="Vegetarian">Vegetarian</option>
+                <option value="Vegan">Vegan</option>
+                <option value="Non-Vegetarian">Non-Vegetarian</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Filter</button>
+        </div>
+    </form>
     <div class="row">
-        {% for restaurant in featured_restaurants %}
+        {% for restaurant in restaurants %}
         <div class="col-md-4 mb-4">
             <div class="card">
                 <img src="{% static 'images/restaurant-placeholder.jpg' %}" class="card-img-top" alt="{{ restaurant.name }}">

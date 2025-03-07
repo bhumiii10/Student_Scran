@@ -1,0 +1,45 @@
+/* Custom styles */
+.hero-section {
+    background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/static/images/hero-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    padding: 100px 0;
+    color: white; /* Ensure text is visible on the dark background */
+    text-align: center; /* Center-align text */
+}
+
+.card {
+    transition: transform 0.3s;
+    border: 1px solid #ddd; /* Add a border for better visibility */
+    border-radius: 8px; /* Rounded corners */
+    overflow: hidden; /* Ensure content doesn't overflow */
+}
+
+.card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a shadow on hover */
+}
+
+.card-img-top {
+    width: 100%; /* Ensure the image fills the card */
+    height: 200px; /* Set a fixed height for consistency */
+    object-fit: cover; /* Ensure the image covers the area */
+}
+
+.card-body {
+    padding: 1rem; /* Add padding inside the card */
+}
+
+.card-title {
+    font-size: 1.25rem; /* Larger title font size */
+    margin-bottom: 0.75rem; /* Add spacing below the title */
+}
+
+.card-text {
+    font-size: 1rem; /* Standard font size for text */
+    color: #555; /* Slightly darker text color */
+}
+
+.btn {
+    margin-top: 1rem; /* Add spacing above buttons */
+}
