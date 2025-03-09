@@ -1,8 +1,6 @@
-from django.contrib.auth.models import AbstractUser, AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
 
-
-#Creates custom user model for login; student/vendor
 class CustomUserManager(BaseUserManager):
     def create_user(self, username, email, password=None, **extra_fields):
         """Create and return a regular user with an email and password."""
@@ -20,7 +18,6 @@ class CustomUserManager(BaseUserManager):
         extra_fields.setdefault('is_superuser', True)
         return self.create_user(username, email, password, **extra_fields)
 
-
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     ROLE_CHOICES = [
         ('student', 'Student'),
@@ -30,41 +27,33 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(unique=True)
     role = models.CharField(max_length=10, choices=ROLE_CHOICES)
 
-    # Other fields can be added as necessary
+    # Other fields
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     date_joined = models.DateTimeField(auto_now_add=True)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
-    objects = CustomUserManager()
-
-    USERNAME_FIELD = 'email'  # Use email as the unique identifier
-    REQUIRED_FIELDS = ['username']  # Required fields when creating a superuser
-
-    def __str__(self):
-        return self.username
-
-
-class CustomUser(AbstractUser):
-    phone_number = models.CharField(max_length=15, blank=True, null=True)
-    address = models.TextField(blank=True, null=True)
-
-    # Add unique related_name attributes
+    # Define groups and user_permissions with unique related_name
     groups = models.ManyToManyField(
         'auth.Group',
-        related_name='customuser_set',  # Unique related_name
+        related_name='customuser_set',
         blank=True,
         help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
         verbose_name='groups',
     )
     user_permissions = models.ManyToManyField(
         'auth.Permission',
-        related_name='customuser_set',  # Unique related_name
+        related_name='customuser_set',
         blank=True,
         help_text='Specific permissions for this user.',
         verbose_name='user permissions',
     )
+
+    objects = CustomUserManager()
+
+    USERNAME_FIELD = 'email'  # Use email as the unique identifier
+    REQUIRED_FIELDS = ['username']  # Required fields when creating a superuser
 
     def __str__(self):
         return self.username
