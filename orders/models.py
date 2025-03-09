@@ -2,12 +2,13 @@ from django.db import models
 from users.models import CustomUser
 from restaurants.models import MenuItem, Restaurant
 
-
 class Order(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     status = models.CharField(max_length=50, default="Pending")
     created_at = models.DateTimeField(auto_now_add=True)
+
+    objects = models.Manager()
 
     def __str__(self):
         return f"Order {self.id} by {self.user.username}"
