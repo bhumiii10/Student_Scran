@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Shopping Cart</h2>
+
+    <!-- Cart Items List -->
+    <div class="row">
+        {% if cart %}
+        <div class="col-md-12">
+            <table class="table table-striped table-bordered">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart.items.all %}
+                    <tr>
+                        <td>{{ item.item.name }}</td>  <!-- Corrected to access item.name -->
+                        <td>${{ item.item.price }}</td>  <!-- Corrected to access item.price -->
+                        <td>
+                            <form action="{% url 'update_cart' item.id %}" method="POST" class="form-inline">
+                                {% csrf_token %}
+                                <label>
+                                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1" class="form-control mr-2" style="width: 80px;">
+                                </label>
+                                <button type="submit" class="btn btn-info btn-sm">Update</button>
+                            </form>
+                        </td>
+                        <td>${{ item.total_price|floatformat:2 }}</td>  <!-- Corrected total calculation -->
+                        <td>
+                            <form action="{% url 'remove_from_cart' item.id %}" method="POST">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- Cart Total Section -->
+            <div class="d-flex justify-content-between align-items-center">
+                <h4 class="text-success">Total: ${{ total }}</h4>
+                <a href="{% url 'checkout' %}" class="btn btn-success btn-lg">Proceed to Checkout</a>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-md-12">
+            <p class="text-center">Your cart is empty. <a href="{% url 'restaurant_list' %}">Browse Restaurants</a></p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block styles %}
+<style>
+    .table th, .table td {
+        vertical-align: middle;
+    }
+
+    .table-bordered {
+        border: 1px solid #dee2e6;
+    }
+
+    .btn-info {
+        background-color: #17a2b8;
+        border-color: #17a2b8;
+    }
+
+    .btn-info:hover {
+        background-color: #138496;
+        border-color: #117a8b;
+    }
+
+    .btn-danger {
+        background-color: #dc3545;
+        border-color: #dc3545;
+    }
+
+    .btn-danger:hover {
+        background-color: #c82333;
+        border-color: #bd2130;
+    }
+
+    .form-inline input, .form-inline button {
+        margin-bottom: 5px;
+    }
+
+    .d-flex {
+        margin-top: 20px;
+    }
+</style>
+{% endblock %}

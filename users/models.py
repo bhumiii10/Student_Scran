@@ -34,17 +34,17 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
-    # Define groups and user_permissions with unique related_name
     groups = models.ManyToManyField(
         'auth.Group',
-        related_name='customuser_set',
+        related_name='customuser_set',  # Reverse relation name, allows access from group to users
         blank=True,
         help_text='The groups this user belongs to. A user will get all permissions granted to each of their groups.',
         verbose_name='groups',
     )
+
     user_permissions = models.ManyToManyField(
         'auth.Permission',
-        related_name='customuser_set',
+        related_name='customuser_set',  # Reverse relation name, allows access from permission to users
         blank=True,
         help_text='Specific permissions for this user.',
         verbose_name='user permissions',
@@ -52,8 +52,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
     objects = CustomUserManager()
 
-    USERNAME_FIELD = 'email'  # Use email as the unique identifier
-    REQUIRED_FIELDS = ['username']  # Required fields when creating a superuser
+    USERNAME_FIELD = 'email'  # Use email as the unique identifier for authentication
+    REQUIRED_FIELDS = ['username']  # Required fields when creating a superuser (email is already required)
 
     def __str__(self):
         return self.username

@@ -1,0 +1,174 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <!-- Link to Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <style>
+        .navbar {
+            background-color: #bfaed3; /* Lighter purple */
+        }
+        .navbar-brand img {
+            max-width: 120px;
+        }
+        .card-header {
+            background-color: #bfaed3; /* Lighter purple */
+            color: white;
+            font-size: 20px;
+        }
+        .card-body {
+            background-color: #f4f4f4;
+        }
+        .profile-info .list-group-item {
+            border: none;
+            font-size: 16px;
+        }
+        .btn-warning {
+            background-color: #6a4c9c;
+            border-color: #6a4c9c;
+        }
+        .btn-warning:hover {
+            background-color: #582b8e;
+            border-color: #582b8e;
+        }
+        .profile-info {
+            margin-top: 20px;
+        }
+        .order-history th {
+            color: #6a4c9c;
+        }
+        .order-history td {
+            font-size: 14px;
+        }
+        .profile-title {
+            font-size: 24px;
+            font-weight: bold;
+            color: #6a4c9c;
+            padding: 20px;
+        }
+        .profile-title i {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar/Header -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'images/Student ScransLogo.png' %}" alt="Logo">
+            </a>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <span class="navbar-text">Welcome, {{ user.username }}</span>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'cart' %}" class="nav-link">
+                                <i class="fa fa-shopping-cart"></i> Cart
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a href="{% url 'login' %}" class="nav-link">Login</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+        <div class="row">
+            <!-- Profile Title with Icon -->
+            <div class="col-md-12">
+                <div class="profile-title">
+                    <i class="fas fa-user-circle"></i> My Profile
+                </div>
+            </div>
+            <!-- User Info Section -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        Personal Information
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group">
+                            <li class="list-group-item">
+                                <i class="fas fa-user"></i> Username: <strong>{{ user.username }}</strong>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-envelope"></i> Email: <strong>{{ user.email }}</strong>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-phone-alt"></i> Phone: <strong>{{ user.profile.phone_number }}</strong>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-map-marker-alt"></i> Address: <strong>{{ user.profile.address }}</strong>
+                            </li>
+                            <li class="list-group-item">
+                                <i class="fas fa-calendar-alt"></i> Date Joined: <strong>{{ user.date_joined }}</strong>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order History Section -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-history"></i> Order History
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered order-history">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Restaurant</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in orders %}
+                                    <tr>
+                                        <td>{{ order.id }}</td>
+                                        <td>{{ order.restaurant.name }}</td>
+                                        <td>{{ order.created_at }}</td>
+                                        <td>{{ order.status }}</td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="4">No orders found.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-3">
+            <a href="{% url 'edit_profile' %}" class="btn btn-warning">Edit Profile</a>
+        </div>
+    </div>
+
+    <!-- Link to Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

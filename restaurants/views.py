@@ -3,7 +3,8 @@ from django.shortcuts import render, get_object_or_404
 from .models import Restaurant, MenuItem
 
 def home(request):
-    return render(request, 'home.html')
+    featured_restaurants = Restaurant.objects.all()[:4]  # Fetch some restaurants or however you filter
+    return render(request, 'home.html', {'featured_restaurants': featured_restaurants})
 
 def restaurant_list(request):
     tag = request.GET.get('tag')

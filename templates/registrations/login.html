@@ -1,10 +1,116 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <!-- Link to Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* Additional styling */
+        body {
+            background-color: #f0f4f8;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 500px;
+            margin-top: 50px;
+        }
+
+        .login-title {
+            text-align: center;
+            color: #6a4c9c;
+            margin-bottom: 30px;
+        }
+
+        .btn-purple {
+            background-color: #6a4c9c;
+            color: white;
+            border: none;
+        }
+
+        .btn-purple:hover {
+            background-color: #582b8e;
+        }
+
+        .form-control {
+            border-radius: 0.25rem;
+        }
+
+        .text-center a {
+            color: #6a4c9c;
+        }
+
+        .text-center a:hover {
+            color: #582b8e;
+        }
+
+        /* Logo Styling */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            max-width: 180px;
+            background: none; /* No background */
+        }
+    </style>
 </head>
 <body>
+
+    <div class="container">
+        <!-- Logo -->
+        <div class="logo-container">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'images/Student ScransLogo.png' %}" alt="Students ScransLogo" class="logo">
+            </a>
+        </div>
+
+        <h2 class="login-title">Login</h2>
+
+        <!-- Login Form -->
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" class="form-control" id="username" name="username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+
+            <div class="form-group">
+                <label for="role">Role</label>
+                <select class="form-control" id="role" name="role" required>
+                    <option value="student">Student</option>
+                    <option value="vendor">Vendor</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+
+            <button type="submit" class="btn btn-purple btn-block">Login</button>
+        </form>
+
+        <div class="text-center mt-3">
+            <p>Don't have an account? <a href="{% url 'register' %}">Sign up here</a></p>
+        </div>
+    </div>
+
+    <!-- Link to Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 </body>
 </html>

@@ -1,15 +1,22 @@
-
 {% extends 'base.html' %}
-
 {% load static %}
 
 {% block content %}
-<!-- Hero Section -->
-<div class="hero-section text-center py-5 bg-primary text-white">
-    <h1 class="display-4">Welcome to Student Scran!</h1>
-    <p class="lead">Find the best student deals on food near you.</p>
-    <a href="{% url 'restaurant_list' %}" class="btn btn-light btn-lg">Explore Restaurants</a>
-    <a href="{% url 'login' %}" class="btn btn-outline-light btn-lg">Login</a>
+<!-- Hero Section with Logo, Gradient Background, and Centered Text -->
+<div class="hero-section text-center py-5" style="background: linear-gradient(135deg, #d6aef9 0%, #6a4c9c 100%); color: #6a4c9c; position: relative;">
+
+
+    <!-- Text below the logo -->
+    <div class="hero-text" style="margin-top: 200px;">
+        <h1 class="display-4">Welcome to Student Scran!</h1>
+        <p class="lead">Find the best student deals on food near you.</p>
+    </div>
+
+    <!-- Buttons -->
+    <div class="btn-container mb-4">
+        <a href="{% url 'restaurant_list' %}" class="btn btn-purple btn-lg mx-2">Explore Restaurants</a>
+        <!-- Removed the login button here since it's in the header already -->
+    </div>
 </div>
 
 <!-- Featured Restaurants Section -->
@@ -18,16 +25,79 @@
     <div class="row">
         {% for restaurant in featured_restaurants %}
         <div class="col-md-4 mb-4">
-            <div class="card">
+            <div class="card shadow-sm border-light">
                 <img src="{% static 'images/restaurant-placeholder.jpg' %}" class="card-img-top" alt="{{ restaurant.name }}">
-                <div class="card-body">
-                    <h5 class="card-title">{{ restaurant.name }}</h5>
+                <div class="card-body" style="background-color: #f4f4f4;">
+                    <h5 class="card-title text-center text-dark" style="color: #6a4c9c;">{{ restaurant.name }}</h5>
                     <p class="card-text">{{ restaurant.description }}</p>
-                    <a href="{% url 'restaurant_detail' restaurant.id %}" class="btn btn-primary">View Menu</a>
+                    <a href="{% url 'restaurant_detail' restaurant.id %}" class="btn" style="background-color: #9b4dca; color: white; border: none;">View Menu</a>
                 </div>
             </div>
         </div>
         {% endfor %}
     </div>
 </div>
+
+{% endblock %}
+
+{% block styles %}
+<style>
+    /* Hero Section Customization */
+    .hero-section {
+        background: linear-gradient(135deg, #d6aef9 0%, #6a4c9c 100%);
+        color: #6a4c9c;
+        text-align: center;
+        padding: 100px 0;
+        position: relative;
+    }
+
+    /* Logo positioned at the top left */
+    .logo-container {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: none;
+    }
+
+    .logo {
+        max-width: 180px;
+        background: none;
+    }
+
+    /* Text below the logo */
+    .hero-text {
+        margin-top: 200px;
+    }
+
+    /* Button Customization */
+    .btn-purple {
+        background-color: #6a4c9c;
+        color: white;
+        border: none;
+    }
+
+    .btn-purple:hover {
+        background-color: #582b8e;
+    }
+
+    .btn-outline-purple {
+        background-color: white;
+        color: #6a4c9c;
+        border: 2px solid #6a4c9c;
+    }
+
+    .btn-outline-purple:hover {
+        background-color: #6a4c9c;
+        color: white;
+        border-color: #582b8e;
+    }
+
+    .footer {
+        background-color: #6a4c9c;
+        color: white;
+        text-align: center;
+        padding: 20px 0;
+        margin-top: 50px;
+    }
+</style>
 {% endblock %}
