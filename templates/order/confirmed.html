@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+    .alert-light-purple {
+        background-color: #b8a0d1; /* Lighter purple color */
+        color: white;
+    }
+
+    .btn-grey {
+        background-color: #6c757d; /* Grey background */
+        color: white; /* White text on the grey button */
+        border: none; /* Remove border */
+    }
+
+    .btn-grey:hover {
+        background-color: #5a6268; /* Slightly darker grey on hover */
+    }
+</style>
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Order Confirmed</h2>
+    <div class="alert alert-light-purple">
+        <p>Your order has been placed successfully!</p>
+        <p>Order ID: {{ order.id }}</p>
+        <p>Restaurant: {{ order.restaurant.name }}</p>
+        <p>Status: {{ order.status }}</p>
+        <p>Thank you for your order! You will receive a confirmation email shortly.</p>
+        <a href="{% url 'home' %}" class="btn btn-grey">Back to Home</a>
+    </div>
+</div>
+{% endblock %}

@@ -29,8 +29,17 @@ urlpatterns = [
     path('restaurants/', restaurant_list, name='restaurant_list'),
     path('restaurants/<int:restaurant_id>/', restaurant_detail, name='restaurant_detail'),
     path('accounts/', include('django.contrib.auth.urls')),
-    path('', views.home, name='home'),
-    path('restaurants/', views.restaurants, name='restaurants'),
-
-    path('users/', include('users.urls')),# This will include the URLs from the 'users/urls.py' file
+    path('login/', views.user_login, name='login'),
+    path('signup/', views.register, name='register'),
+    path('profile/', views.profile, name='profile'),
+    path('profile/edit/', views.edit_profile, name='edit_profile'),
+    path('cart/', views.cart_view, name='cart'),  # Cart page
+    path('add-to-cart/<int:item_id>/', views.add_to_cart, name='add_to_cart'),
+    path('update-cart/<int:item_id>/', views.update_cart, name='update_cart'),
+    path('remove-from-cart/<int:item_id>/', views.remove_from_cart, name='remove_from_cart'),
+    path('checkout/', views.checkout, name='checkout'),
+    path('confirm-order/', views.confirm_order, name='confirm_order'),
+    path('order/confirmed/<int:order_id>/', views.order_confirmed, name='order_confirmed'),
+    path('logout/', views.logout_view, name='logout'),  # Logout view
 ]
+

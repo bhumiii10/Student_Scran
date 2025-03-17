@@ -3,22 +3,30 @@
 
 {% block content %}
 <div class="container mt-5">
-    <h1>{{ restaurant.name }}</h1>
-    <p>{{ restaurant.description }}</p>
+    <!-- Restaurant Information -->
+    <h1 class="text-center" style="color: #6a4c9c;">{{ restaurant.name }}</h1>
+    <p class="text-center" style="font-size: 1.2rem; color: #555;">{{ restaurant.description }}</p>
 
-    <h2>Menu</h2>
+    <!-- Menu Section -->
+    <h2 class="text-center my-4" style="color: #6a4c9c;">Menu</h2>
     <div class="row">
         {% for item in menu_items %}
         <div class="col-md-6 mb-4">
-            <div class="card">
+            <div class="card shadow-sm border-light">
                 <div class="card-body">
-                    <h5 class="card-title">{{ item.name }}</h5>
+                    <h5 class="card-title" style="color: #6a4c9c;">{{ item.name }}</h5>
                     <p class="card-text">${{ item.price }}</p>
                     <p class="card-text">
                         {% for tag in item.dietary_tags.all %}
-                        <span class="badge bg-secondary">{{ tag.name }}</span>
+                        <span class="badge" style="background-color: #9b4dca; color: white;">{{ tag.name }}</span>
                         {% endfor %}
                     </p>
+
+                    <!-- Add to Cart Button -->
+                    <form action="{% url 'add_to_cart' item.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-warning btn-sm">Add to Cart</button>
+                    </form>
                 </div>
             </div>
         </div>

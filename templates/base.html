@@ -1,51 +1,77 @@
 {% load static %}
-
+<!-- base.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Scran</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link href="{% static 'css/styles.css' %}" rel="stylesheet">
+    <title>{% block title %}Student Scran{% endblock %}</title>
+    <!-- Link to Bootstrap CSS or any other CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Add Font Awesome CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
-    <!-- Navbar -->
+    <!-- Navbar/Header -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <a class="navbar-brand" href="{% url 'home' %}">Student Scran</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <!-- Logo and Home Link -->
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <img src="{% static 'images/Student ScransLogo.png' %}" alt="Logo" style="max-width: 120px;">
+            </a>
+
+            <!-- Navbar links -->
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'home' %}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'restaurant_list' %}">Restaurants</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'login' %}">Login</a>
-                    </li>
+                <ul class="navbar-nav ml-auto">
+                    {% if user.is_authenticated %}
+                        <!-- If logged in, show username dropdown and cart -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                Welcome, {{ user.username }}
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <!-- Profile link with icon -->
+                                <a class="dropdown-item" href="{% url 'profile' %}">
+                                    <i class="fas fa-user"></i> Profile
+                                </a>
+                                <!-- Cart link with icon -->
+                                <a class="dropdown-item" href="{% url 'cart' %}">
+                                    <i class="fas fa-shopping-cart"></i> Cart
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <!-- Logout link -->
+                                <a class="dropdown-item" href="{% url 'logout' %}">
+                                    <i class="fas fa-sign-out-alt"></i> Logout
+                                </a>
+                            </div>
+                        </li>
+                    {% else %}
+                        <!-- If not logged in, show Login link -->
+                        <li class="nav-item">
+                            <a href="{% url 'login' %}" class="nav-link">Login</a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
 
-    <!-- Content Block -->
-    <div class="container mt-4">
-        {% block content %}{% endblock %}
+    <!-- Main Content -->
+    <div class="container mt-5">
+        {% block content %}
+        {% endblock %}
     </div>
 
     <!-- Footer -->
-    <footer class="bg-light text-center py-4 mt-4">
-        <p>&copy; 2024 Student Scran. All rights reserved.</p>
+    <footer class="bg-light py-3">
+        <div class="container text-center">
+            <p>&copy; 2024 Student Scran. All rights reserved.</p>
+        </div>
     </footer>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- JavaScript links (e.g., jQuery, Bootstrap) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 </html>

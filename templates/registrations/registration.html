@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,45 +7,150 @@
     <title>Registration</title>
     <!-- Link to Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        /* Additional styling */
+        body {
+            background-color: #f0f4f8;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            max-width: 500px;
+            margin-top: 50px;
+        }
+
+        .login-title {
+            text-align: center;
+            color: #6a4c9c;
+            margin-bottom: 30px;
+        }
+
+        .btn-purple {
+            background-color: #6a4c9c;
+            color: white;
+            border: none;
+        }
+
+        .btn-purple:hover {
+            background-color: #582b8e;
+        }
+
+        .form-control {
+            border-radius: 0.25rem;
+        }
+
+        .text-center a {
+            color: #6a4c9c;
+        }
+
+        .text-center a:hover {
+            color: #582b8e;
+        }
+
+        /* Logo Styling */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            max-width: 180px;
+            background: none; /* No background */
+        }
+    </style>
 </head>
 <body>
 
-    <div class="container mt-5">
-        <h2 class="text-center mb-4">Register</h2>
+    <div class="container">
+        <!-- Logo -->
+        <div class="logo-container">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'images/Student ScransLogo.png' %}" alt="Students ScransLogo" class="logo">
+            </a>
+        </div>
+
+        <h2 class="login-title">Register</h2>
 
         <!-- Registration Form -->
         <form method="POST">
             {% csrf_token %}
 
+            <!-- Check for form errors -->
+            {% if form.errors %}
+                <div class="alert alert-danger">
+                    <strong>There were some errors in your form:</strong>
+                    <ul>
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" class="form-control" id="username" name="username" required>
+                {{ form.username }}  <!-- Render the username field with Bootstrap styling -->
+                {% if form.username.errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.username.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
 
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" class="form-control" id="email" name="email" required>
+                {{ form.email }}  <!-- Render the email field with Bootstrap styling -->
+                {% if form.email.errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.email.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
 
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password" required>
+                {{ form.password }}  <!-- Render the password field with Bootstrap styling -->
+                {% if form.password.errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.password.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
 
             <div class="form-group">
                 <label for="confirm_password">Confirm Password</label>
-                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                {{ form.confirm_password }}  <!-- Render the confirm password field with Bootstrap styling -->
+                {% if form.confirm_password.errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.confirm_password.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
 
             <div class="form-group">
                 <label for="role">Role</label>
-                <select class="form-control" id="role" name="role" required>
-                    <option value="student">Student</option>
-                    <option value="vendor">Vendor</option>
-                </select>
+                {{ form.role }}  <!-- Render the role dropdown with Bootstrap styling -->
+                {% if form.role.errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.role.errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
             </div>
 
-            <button type="submit" class="btn btn-primary btn-block">Register</button>
+            <button type="submit" class="btn btn-purple btn-block">Register</button>
         </form>
 
         <div class="text-center mt-3">
