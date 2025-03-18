@@ -1,0 +1,281 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Discounts</title>
+    <style>
+        body {
+        background-color: #f0f4f8;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        }
+
+        .container {
+        max-width: 800px;
+        margin: 30px auto;
+        padding: 0 20px;
+        }
+
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            max-width: 180px;
+            background: none;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #000000; /* black */
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #555;
+            font-size: 1.1rem;
+        }
+
+        .btn-purple {
+            background-color: #6a4c9c; /* purple */
+            color: white;
+            border: none;
+        }
+
+        .btn-purple:hover {
+            background-color: #582b8e; /* darker purple on hover */
+        }
+
+        .filter-section {
+            margin-bottom: 20px;
+        }
+
+        .filter-toggle {
+            background-color: #6a4c9c; /* purple */
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .filter-toggle:hover {
+            background-color: #582b8e; /* darker purple on hover */
+        }
+
+        .dietary-requirements {
+            display: none;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .dietary-requirements label {
+            background-color: #e1bee7; /* light purple */
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .dietary-requirements label:hover {
+            background-color: #ce93d8; /* slightly darker light purple */
+        }
+
+        .discount-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        .discount-card {
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            text-align: center;
+            padding: 15px;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        .discount-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .discount-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 10px 10px 0 0; /* rounded corners for the top of the image */
+        }
+
+        .discount-card h3 {
+            margin: 15px 0 10px;
+            font-size: 1.3rem;
+            color: #6a4c9c; /* purple */
+        }
+
+        .discount-card p {
+            margin: 0 0 10px;
+            font-size: 1rem;
+            color: #555;
+        }
+
+        .discount-card .discount {
+            margin: 0 0 15px;
+            font-size: 1rem;
+            color: #ff0000; /* red color for "Use code" text */
+            font-weight: bold;
+        }
+
+        .footer {
+            background-color: #6a4c9c; /* purple */
+            color: #fff;
+            text-align: center;
+            padding: 10px 0;
+            margin-top: 30px;
+        }
+
+        .footer p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .discount-grid {
+                grid-template-columns: 1fr; /* one column on smaller screens */
+            }
+        }
+    </style>
+    <!-- filter icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Logo -->
+        <div class="logo-container">
+            <a href="{% url 'home' %}">
+                <img src="{% static 'images/Student ScransLogo.png' %}" alt="Students Scrans Logo" class="logo">
+            </a>
+        </div>
+
+        <div class="header">
+            <h1>Student Discounts</h1>
+            <p>Exclusive deals for students from your favourite Vendors!</p>
+        </div>
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+            <button class="btn btn-purple filter-toggle" onclick="toggleFilters()">
+                <i class="fas fa-filter"></i> Show Dietary Filters
+            </button>
+            <div class="dietary-requirements" id="dietaryFilters">
+                <label><input type="checkbox" name="dietary" value="vegan"> Vegan</label>
+                <label><input type="checkbox" name="dietary" value="halal"> Halal</label>
+                <label><input type="checkbox" name="dietary" value="gluten-free"> Gluten-Free</label>
+                <label><input type="checkbox" name="dietary" value="vegetarian"> Vegetarian</label>
+                <label><input type="checkbox" name="dietary" value="kosher"> Kosher</label>
+            </div>
+        </div>
+
+        <!-- Discount Cards Grid -->
+        <div class="discount-grid">
+            <!-- Green Bites -->
+            <div class="discount-card">
+                <img src="{% static 'images/GreensPic.jpeg' %}" alt="Greens">
+                <h3>Green Bites</h3>
+                <p> Get 20% off your first order </p>
+                <p class="discount">Use code: <strong>GREEN20</strong></p>
+            </div>
+
+            <!-- Burger Haven -->
+            <div class="discount-card">
+                <img src="{% static 'images/BurgerPic.jpeg' %}" alt="Burger">
+                <h3>Burger Haven</h3>
+                <p> 25% Off Your favourite Burgers every day of the week! </p>
+                <p class="discount">Use code: <strong>BURGER25</strong></p>
+            </div>
+
+            <!-- Vegan Delight -->
+            <div class="discount-card">
+                <img src="{% static 'images/VeganPic.jpeg' %}" alt="Vegan">
+                <h3>Vegan Delight</h3>
+                <p> Buy One, Get One FREE</p>
+                <p class="discount">Use code: <strong>StudentBOGO</strong></p>
+            </div>
+
+            <!-- Pasta Palace -->
+            <div class="discount-card">
+                <img src="{% static 'images/PastaPic.jpeg' %}" alt="Pasta Palace">
+                <h3>Pasta Palace</h3>
+                <p>30% off Delicious pasta dishes for Students.</p>
+                <p class="discount">Use code: <strong>PASTA30</strong></p>
+            </div>
+
+            <!-- Sushi Spot -->
+            <div class="discount-card">
+                <img src="{% static 'images/SushiPic.jpeg' %}" alt="Sushi Spot">
+                <h3>Sushi Spot</h3>
+                <p>BOGO on Sushi on Wednesdays!</p>
+                <p class="discount">Use code: <strong>SUSHI-WEDS</strong></p>
+            </div>
+
+            <!-- Curry Corner -->
+            <div class="discount-card">
+                <img src="{% static 'images/CurryPic.jpeg' %}" alt="Curry Corner">
+                <h3>Curry Corner</h3>
+                <p>20% off Authentic curry dishes </p>
+                <p class="discount">Use code: <strong>CURRY20</strong></p>
+            </div>
+
+            <!-- Taco Town -->
+            <div class="discount-card">
+                <img src="{% static 'images/TacoPic.jpeg' %}" alt="Taco Town">
+                <h3>Taco Town</h3>
+                <p>Free Guacamole for Students with each order</p>
+                <p class="discount">Use code: <strong>FREE GUAC</strong></p>
+            </div>
+
+            <!-- Pizza Planet -->
+            <div class="discount-card">
+                <img src="{% static 'images/PizzaPic.jpeg' %}" alt="Pizza Planet">
+                <h3>Pizza Planet</h3>
+                <p>25% off orders for students.</p>
+                <p class="discount">Use code: <strong>PIZZA25</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 Student Scrans. All rights reserved.</p>
+    </div>
+
+    <script>
+        function toggleFilters() {
+            const filters = document.getElementById('dietaryFilters');
+            if (filters.style.display === 'none' || filters.style.display === '') {
+                filters.style.display = 'flex';
+            } else {
+                filters.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
