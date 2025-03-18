@@ -1,6 +1,25 @@
 # restaurants/views.py
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from .models import Restaurant, MenuItem
+from .models import Restaurant, Review
+from .forms import ReviewForm
+from django.contrib import messages
+
+def add_review(request, restaurant_id):
+    restaurant = get_object_or_404(Restaurant, id=restaurant_id)
+    if request.method == 'POST':
+        form = ReviewForm(request.POST)
+        if form.is_valid():
+            review = form.save(commit=False)
+            review.user = request.user
+            review.restaurant = restaurant
+            review.save()
+            messages.success(request, 'Your review has been submitted!')
+            return redirect('restaurant_detail', restaurant_id=restaurant.id)
+    else:
+        form = ReviewForm()
+    return render(request, 'restaurants/add_review.html', {'form': form, 'restaurant': restaurant})
+
 
 def home(request):
     featured_restaurants = Restaurant.objects.all()[:4]  # Fetch some restaurants or however you filter
@@ -18,3 +37,4 @@ def restaurant_detail(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
     menu_items = MenuItem.objects.filter(restaurant=restaurant)
     return render(request, 'restaurants/restaurant_detail.html', {'restaurant': restaurant, 'menu_items': menu_items})
+

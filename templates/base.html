@@ -6,47 +6,52 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Student Scran{% endblock %}</title>
-    <!-- Link to Bootstrap CSS or any other CSS -->
+    <!-- Bootstrap CSS -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Add Font Awesome CDN -->
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Custom CSS -->
+    <style>
+        .btn-purple {
+            background-color: #6a4c9c;
+            color: white;
+            border: none;
+        }
+        .btn-purple:hover {
+            background-color: #582b8e;
+        }
+        .footer {
+            background-color: #6a4c9c;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+    </style>
+    {% block styles %}{% endblock %}
 </head>
 <body>
-    <!-- Navbar/Header -->
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <!-- Logo and Home Link -->
             <a class="navbar-brand" href="{% url 'home' %}">
                 <img src="{% static 'images/Student ScransLogo.png' %}" alt="Logo" style="max-width: 120px;">
             </a>
-
-            <!-- Navbar links -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ml-auto">
                     {% if user.is_authenticated %}
-                        <!-- If logged in, show username dropdown and cart -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 Welcome, {{ user.username }}
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <!-- Profile link with icon -->
-                                <a class="dropdown-item" href="{% url 'profile' %}">
-                                    <i class="fas fa-user"></i> Profile
-                                </a>
-                                <!-- Cart link with icon -->
-                                <a class="dropdown-item" href="{% url 'cart' %}">
-                                    <i class="fas fa-shopping-cart"></i> Cart
-                                </a>
+                                <a class="dropdown-item" href="{% url 'profile' %}"><i class="fas fa-user"></i> Profile</a>
+                                <a class="dropdown-item" href="{% url 'cart' %}"><i class="fas fa-shopping-cart"></i> Cart</a>
                                 <div class="dropdown-divider"></div>
-                                <!-- Logout link -->
-                                <a class="dropdown-item" href="{% url 'logout' %}">
-                                    <i class="fas fa-sign-out-alt"></i> Logout
-                                </a>
+                                <a class="dropdown-item" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt"></i> Logout</a>
                             </div>
                         </li>
                     {% else %}
-                        <!-- If not logged in, show Login link -->
                         <li class="nav-item">
                             <a href="{% url 'login' %}" class="nav-link">Login</a>
                         </li>
@@ -58,20 +63,20 @@
 
     <!-- Main Content -->
     <div class="container mt-5">
-        {% block content %}
-        {% endblock %}
+        {% block content %}{% endblock %}
     </div>
 
     <!-- Footer -->
-    <footer class="bg-light py-3">
+    <footer class="footer">
         <div class="container text-center">
             <p>&copy; 2024 Student Scran. All rights reserved.</p>
         </div>
     </footer>
 
-    <!-- JavaScript links (e.g., jQuery, Bootstrap) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    {% block scripts %}{% endblock %}
 </body>
 </html>

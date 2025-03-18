@@ -8,6 +8,8 @@ from orders.models import Order, Cart, CartItem, OrderItem
 from restaurants.models import MenuItem
 from .forms import UserRegistrationForm
 from django.contrib import messages
+from django.core.exceptions import ValidationError
+from django.http import JsonResponse
 
 
 def user_login(request):
@@ -71,19 +73,20 @@ def profile(request):
     context = {'orders': orders, 'cart': cart}
     return render(request, 'users/profile.html', context)
 
+# users/views.py
+@login_required
 def edit_profile(request):
     if request.method == 'POST':
-        # Update the user's profile information
         user = request.user
         user.username = request.POST.get('username')
         user.email = request.POST.get('email')
         user.role = request.POST.get('role')
+        user.phone_number = request.POST.get('phone_number')  # Update phone_number
+        user.address = request.POST.get('address')  # Update address
         user.save()
 
-        # Show a success message and redirect to the profile page
         messages.success(request, 'Your profile has been updated successfully!')
         return redirect('profile')
-
     return render(request, 'users/edit_profile.html')
 
 
@@ -108,37 +111,61 @@ def verify_role_based_on_email(role, email):
     return True
 
 
+# users/views.py
 @login_required
 def cart_view(request):
     if request.user.is_authenticated:
         # Check if the user has an active cart
-        cart = Cart.objects.filter(user=request.user).first()
+        cart = Cart.objects.filter(user=request.user, status='Active').first()
 
         if not cart:
             # If no cart exists for the user, create a new one
-            cart = Cart.objects.create(user=request.user)
+            cart = Cart.objects.create(user=request.user, status='Active')
 
-        # Get all items in the cart
-        cart_items = cart.items.all()
+        # Group cart items by restaurant
+        cart_items_by_restaurant = {}
+        for item in cart.items.all():
+            restaurant = item.item.restaurant
+            if restaurant not in cart_items_by_restaurant:
+                cart_items_by_restaurant[restaurant] = []
+            cart_items_by_restaurant[restaurant].append(item)
 
         # Calculate total price per item and overall total
-        for item in cart_items:
-            item.total_price = item.item.price * item.quantity  # Calculate total price per item
+        total = sum(item.total_price() for item in cart.items.all())
 
-        total = sum(item.total_price for item in cart_items)  # Total cart value
-
-        context = {'cart': cart, 'cart_items': cart_items, 'total': total}
+        context = {
+            'cart_items_by_restaurant': cart_items_by_restaurant,
+            'total': total
+        }
         return render(request, 'order/cart.html', context)
     else:
         # Redirect the user to login if they are not authenticated
         return redirect('login')
 
+# users/views.py
 def add_to_cart(request, item_id):
-
     item = get_object_or_404(MenuItem, id=item_id)
 
     # Retrieve or create a cart for the logged-in user
-    cart, created = Cart.objects.get_or_create(user=request.user)
+    cart, created = Cart.objects.get_or_create(user=request.user, status='Active')
+
+    # If multiple active carts exist, handle them
+    active_carts = Cart.objects.filter(user=request.user, status='Active')
+    if active_carts.count() > 1:
+        # Merge all active carts into the first one
+        main_cart = active_carts.first()
+        for cart in active_carts[1:]:
+            for cart_item in cart.items.all():
+                # Check if the item already exists in the main cart
+                existing_item = main_cart.items.filter(item=cart_item.item).first()
+                if existing_item:
+                    existing_item.quantity += cart_item.quantity
+                    existing_item.save()
+                else:
+                    cart_item.cart = main_cart
+                    cart_item.save()
+            cart.delete()  # Delete the duplicate cart
+        cart = main_cart
 
     # Check if the item is already in the cart
     cart_item = CartItem.objects.filter(cart=cart, item=item).first()
@@ -172,52 +199,92 @@ def update_cart(request, item_id):
 
 
 def remove_from_cart(request, item_id):
-    # Get the cart for the current user
-    cart = Cart.objects.filter(user=request.user).first()
+    if request.method == 'POST':
+        try:
+            # Get the cart for the current user
+            cart = Cart.objects.filter(user=request.user, status='Active').first()
+            if cart:
+                # Get the cart item to be removed
+                cart_item = get_object_or_404(CartItem, cart=cart, id=item_id)
+                cart_item.delete()  # Remove the cart item
+                return JsonResponse({'success': True})
+            else:
+                return JsonResponse({'success': False, 'error': 'Cart not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'success': False, 'error': 'Invalid request method'}, status=405)
 
-    if cart:
-        # Get the cart item to be removed
-        cart_item = get_object_or_404(CartItem, cart=cart, id=item_id)
-        cart_item.delete()  # Remove the cart item
-
-    return redirect('cart')  # Redirect back to the cart page
 
 
 def checkout(request):
-    # Ensure the user is authenticated
+    print("Checkout view called")  # Debugging statement
     if not request.user.is_authenticated:
-        return redirect('login')  # Redirect to login page if not logged in
+        print("User not authenticated")  # Debugging statement
+        return redirect('login')
 
     # Get the user's active cart
-    cart = Cart.objects.filter(user=request.user).first()
+    cart = Cart.objects.filter(user=request.user, status='Active').first()
+    print(f"Cart: {cart}")  # Debugging statement
 
+    # Check if the cart exists and has items
     if not cart or cart.items.count() == 0:
-        return redirect('cart')  # If the cart is empty, redirect to cart page
+        print("Cart is empty or does not exist")  # Debugging statement
+        messages.error(request, "Your cart is empty.")
+        return redirect('cart')
+
+    # Print cart items and their restaurants
+    for item in cart.items.all():
+        print(f"Item: {item.item.name}, Restaurant: {item.item.restaurant.name}")  # Debugging statement
+
+    # Ensure all items in the cart belong to the same restaurant
+    restaurants = set(item.item.restaurant for item in cart.items.all())
+    if len(restaurants) > 1:
+        print("Items from multiple restaurants")  # Debugging statement
+        messages.error(request, "All items in your cart must be from the same restaurant.")
+        return redirect('cart')
+
+    # Get the restaurant from the first item
+    restaurant = cart.items.first().item.restaurant
+    print(f"Restaurant: {restaurant}")  # Debugging statement
 
     # Calculate the total price of the items in the cart
     total_price = sum(item.total_price() for item in cart.items.all())
+    print(f"Total price: {total_price}")  # Debugging statement
 
     # Create the order
-    order = Order.objects.create(
-        user=request.user,
-        restaurant=cart.items.first().item.restaurant,  # Assuming all items are from the same restaurant
-        status='Pending'
-    )
+    try:
+        order = Order.objects.create(
+            user=request.user,
+            restaurant=restaurant,
+            status='Pending',
+            total_price=total_price
+        )
+        print(f"Order created: {order.id}")  # Debugging statement
+    except Exception as e:
+        print(f"Error creating order: {e}")  # Debugging statement
+        messages.error(request, "An error occurred while creating your order.")
+        return redirect('cart')
 
     # Transfer cart items to order items
     for cart_item in cart.items.all():
-        OrderItem.objects.create(
-            order=order,
-            item=cart_item.item,
-            quantity=cart_item.quantity
-        )
+        try:
+            OrderItem.objects.create(
+                order=order,
+                item=cart_item.item,
+                quantity=cart_item.quantity
+            )
+        except Exception as e:
+            print(f"Error creating order item: {e}")  # Debugging statement
+            messages.error(request, "An error occurred while processing your order.")
+            return redirect('cart')
 
-    # Mark cart as converted
-    cart.status = 'Converted'
-    cart.save()
+    # Clear the cart after checkout
+    cart.items.all().delete()
+    print("Cart cleared")  # Debugging statement
 
     # Redirect to the order confirmation page
-    return redirect(reverse('order_confirmed', kwargs={'order_id': order.id}))
+    return redirect('order_confirmed', order_id=order.id)
 
 def confirm_order(request):
     # Ensure the user is authenticated
