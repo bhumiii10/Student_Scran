@@ -26,13 +26,18 @@ def home(request):
     return render(request, 'home.html', {'featured_restaurants': featured_restaurants})
 
 def restaurant_list(request):
+    search_query = request.GET.get('search', '')
     tag = request.GET.get('tag')
     if tag:
         restaurants = Restaurant.objects.filter(menu_items__dietary_tags__name=tag).distinct()
     else:
         restaurants = Restaurant.objects.all()
-    return render(request, 'restaurants/restaurant_list.html', {'restaurants': restaurants})
 
+        # Now, filter by search query for restaurant name
+    if search_query:
+        restaurants = restaurants.filter(name__icontains=search_query)  # Case-insensitive search
+
+    return render(request, 'restaurants/restaurant_list.html', {'restaurants': restaurants})
 def restaurant_detail(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
     menu_items = MenuItem.objects.filter(restaurant=restaurant)
