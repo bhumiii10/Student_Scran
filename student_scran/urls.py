@@ -16,8 +16,10 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from users import views
 
+
+from users import views
+from restaurants.views import home, restaurant_list, restaurant_detail, add_review
 # student_scran/urls.py
 from django.contrib import admin
 from django.urls import path, include
@@ -39,7 +41,9 @@ urlpatterns = [
     path('remove-from-cart/<int:item_id>/', views.remove_from_cart, name='remove_from_cart'),
     path('checkout/', views.checkout, name='checkout'),
     path('confirm-order/', views.confirm_order, name='confirm_order'),
-    path('order/confirmed/<int:order_id>/', views.order_confirmed, name='order_confirmed'),
+    path('order_confirmed/<int:order_id>/', views.order_confirmed, name='order_confirmed'),
     path('logout/', views.logout_view, name='logout'),  # Logout view
+    path('restaurants/<int:restaurant_id>/add_review/', add_review, name='add_review'),
+
 ]
 

@@ -3,8 +3,7 @@
 
 {% block content %}
 <div class="container mt-5">
-    <!-- Filter Form -->
-    <h2 class="text-center mb-4" style="color: #6a4c9c;">Restaurants</h2>
+    <h2 class="text-center mb-4">Restaurants</h2>
     <form method="get" class="mb-4">
         <div class="input-group">
             <select name="tag" class="form-select">
@@ -13,11 +12,9 @@
                 <option value="Vegan">Vegan</option>
                 <option value="Non-Vegetarian">Non-Vegetarian</option>
             </select>
-            <button type="submit" class="btn" style="background-color: #9b4dca; color: white;">Filter</button>
+            <button type="submit" class="btn btn-purple">Filter</button>
         </div>
     </form>
-
-    <!-- Restaurants List -->
     <div class="row">
         {% for restaurant in restaurants %}
         <div class="col-md-4 mb-4">
@@ -26,7 +23,7 @@
                 <div class="card-body" style="background-color: #f4f4f4;">
                     <h5 class="card-title text-center text-dark" style="color: #6a4c9c;">{{ restaurant.name }}</h5>
                     <p class="card-text">{{ restaurant.description }}</p>
-                    <a href="{% url 'restaurant_detail' restaurant.id %}" class="btn" style="background-color: #9b4dca; color: white; border: none;">View Menu</a>
+                    <a href="{% url 'restaurant_detail' restaurant.id %}" class="btn btn-purple">View Menu</a>
                 </div>
             </div>
         </div>

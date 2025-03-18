@@ -1,0 +1,61 @@
+<!-- restaurants/add_review.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>Add a Review for {{ restaurant.name }}</h1>
+    <form method="POST" action="{% url 'add_review' restaurant.id %}">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="rating">Rating</label>
+            <div class="star-rating">
+                <span data-value="1">&#9733;</span>
+                <span data-value="2">&#9733;</span>
+                <span data-value="3">&#9733;</span>
+                <span data-value="4">&#9733;</span>
+                <span data-value="5">&#9733;</span>
+            </div>
+            <input type="hidden" name="rating" id="rating-value">
+        </div>
+        <div class="form-group">
+            <label for="comment">Comment</label>
+            <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Review</button>
+    </form>
+</div>
+
+<style>
+.star-rating span {
+    font-size: 24px;
+    cursor: pointer;
+    color: #ccc;
+}
+.star-rating span.active {
+    color: #ffcc00;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const stars = document.querySelectorAll('.star-rating span');
+    const ratingInput = document.getElementById('rating-value');
+
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            const value = this.getAttribute('data-value');
+            ratingInput.value = value;  // Update the hidden input field
+
+            // Highlight selected stars
+            stars.forEach(s => {
+                if (s.getAttribute('data-value') <= value) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}
