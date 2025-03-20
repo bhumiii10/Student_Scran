@@ -6,6 +6,19 @@
     <h1 class="text-center" style="color: #6a4c9c;">{{ restaurant.name }}</h1>
     <p class="text-center" style="font-size: 1.2rem; color: #555;">{{ restaurant.description }}</p>
 
+    <!-- Discount Information -->
+<h2 class="text-center my-4" style="color: #6a4c9c;">Available Discount</h2>
+{% if discounts %}
+    <div class="discount-card">
+        <h3>{{ discounts.0.code }}</h3>
+        <p>{{ discounts.0.description }}</p>
+        <p class="discount">Discount: {{ discounts.0.discount_percentage }}% off</p>
+        <p><small>Valid until: {{ discounts.0.valid_to }}</small></p>
+    </div>
+{% else %}
+    <p class="text-center">No discounts available at the moment.</p>
+{% endif %}
+
     <!-- Add Review Form -->
     <h2 class="text-center my-4" style="color: #6a4c9c;">Add a Review</h2>
     <form method="POST" action="{% url 'add_review' restaurant.id %}" class="mb-5">
@@ -66,10 +79,14 @@
                         <span class="badge" style="background-color: #9b4dca; color: white;">{{ tag.name }}</span>
                         {% endfor %}
                     </p>
-                    <form action="{% url 'add_to_cart' item.id %}" method="POST">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-warning btn-sm">Add to Cart</button>
-                    </form>
+                    {% if request.user.is_authenticated %}
+    <form action="{% url 'add_to_cart' item.id %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-warning btn-sm">Add to Cart</button>
+    </form>
+{% else %}
+    <a href="{% url 'login' %}" class="btn btn-warning btn-sm">Login to Add to Cart</a>
+{% endif %}
                 </div>
             </div>
         </div>

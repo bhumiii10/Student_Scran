@@ -34,3 +34,13 @@ class MenuItem(models.Model):
     def __str__(self):
         return self.name
 
+class Discount(models.Model):
+    code = models.CharField(max_length=20, unique=True)  # Discount code (e.g., STUDENT20)
+    description = models.TextField()  # Description of the discount
+    discount_percentage = models.DecimalField(max_digits=5, decimal_places=2)  # Percentage discount (e.g., 20.00)
+    is_active = models.BooleanField(default=True)  # Whether the discount is active
+    valid_from = models.DateTimeField()  # Start date of the discount
+    valid_to = models.DateTimeField()  # End date of the discount
+
+    def __str__(self):
+        return f"{self.code} - {self.discount_percentage}% off"
