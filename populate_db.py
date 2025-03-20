@@ -1,11 +1,13 @@
 import os
 import django
+from django.utils import timezone
 
 # Set up Django environment
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'student_scran.settings')
 django.setup()
 
-from restaurants.models import Restaurant, MenuItem, DietaryTag
+from restaurants.models import Restaurant, MenuItem, DietaryTag, Discount
+
 
 def populate_db():
     # Create dietary tags
@@ -104,6 +106,16 @@ def populate_db():
             menu_item.dietary_tags.set(item["tags"])
 
     print("Database populated successfully!")
+
+    # Add a single discount
+    Discount.objects.create(
+        code="STUDENT20",
+        description="20% off for students",
+        discount_percentage=20.00,
+        is_active=True,
+        valid_from=timezone.now(),
+        valid_to=timezone.now() + timezone.timedelta(days=365),  # Valid for 1 year
+    )
 
 if __name__ == '__main__':
     populate_db()

@@ -5,11 +5,12 @@ from django.http import HttpResponse
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from orders.models import Order, Cart, CartItem, OrderItem
-from restaurants.models import MenuItem
+from restaurants.models import MenuItem, Discount
 from .forms import UserRegistrationForm
 from django.contrib import messages
 from django.core.exceptions import ValidationError
 from django.http import JsonResponse
+from decimal import Decimal
 
 
 def user_login(request):
@@ -133,9 +134,17 @@ def cart_view(request):
         # Calculate total price per item and overall total
         total = sum(item.total_price() for item in cart.items.all())
 
+        # Calculate discounted total if a discount is applied
+        discounted_total = None
+        if 'discount' in request.session:
+            discount_data = request.session['discount']
+            discount_percentage = Decimal(discount_data['percentage'])  # Convert to Decimal
+            discounted_total = total * (1 - discount_percentage / 100)  # Apply discount
+
         context = {
             'cart_items_by_restaurant': cart_items_by_restaurant,
-            'total': total
+            'total': total,
+            'discounted_total': discounted_total,  # Pass the discounted total to the template
         }
         return render(request, 'order/cart.html', context)
     else:
@@ -144,6 +153,11 @@ def cart_view(request):
 
 # users/views.py
 def add_to_cart(request, item_id):
+    # Check if the user is authenticated
+    if not request.user.is_authenticated:
+        messages.error(request, "You must be logged in to add items to the cart.")
+        return redirect('login')  # Redirect to the login page
+
     item = get_object_or_404(MenuItem, id=item_id)
 
     # Retrieve or create a cart for the logged-in user
@@ -218,70 +232,48 @@ def remove_from_cart(request, item_id):
 
 
 def checkout(request):
-    print("Checkout view called")  # Debugging statement
     if not request.user.is_authenticated:
-        print("User not authenticated")  # Debugging statement
         return redirect('login')
 
     # Get the user's active cart
-    cart = Cart.objects.filter(user=request.user, status='Active').first()
-    print(f"Cart: {cart}")  # Debugging statement
+    cart = Cart.objects.filter(user=request.user).first()
 
     # Check if the cart exists and has items
     if not cart or cart.items.count() == 0:
-        print("Cart is empty or does not exist")  # Debugging statement
         messages.error(request, "Your cart is empty.")
         return redirect('cart')
 
-    # Print cart items and their restaurants
-    for item in cart.items.all():
-        print(f"Item: {item.item.name}, Restaurant: {item.item.restaurant.name}")  # Debugging statement
-
-    # Ensure all items in the cart belong to the same restaurant
-    restaurants = set(item.item.restaurant for item in cart.items.all())
-    if len(restaurants) > 1:
-        print("Items from multiple restaurants")  # Debugging statement
-        messages.error(request, "All items in your cart must be from the same restaurant.")
-        return redirect('cart')
-
-    # Get the restaurant from the first item
-    restaurant = cart.items.first().item.restaurant
-    print(f"Restaurant: {restaurant}")  # Debugging statement
-
     # Calculate the total price of the items in the cart
     total_price = sum(item.total_price() for item in cart.items.all())
-    print(f"Total price: {total_price}")  # Debugging statement
+
+    # Apply discount if available
+    discount = None
+    if 'discount' in request.session:
+        discount_data = request.session['discount']
+        discount = Discount.objects.get(id=discount_data['id'])
+        discount_percentage = Decimal(discount_data['percentage'])  # Convert to Decimal
+        total_price *= (1 - discount_percentage / 100)  # Apply discount
+        del request.session['discount']  # Clear the discount from the session
 
     # Create the order
-    try:
-        order = Order.objects.create(
-            user=request.user,
-            restaurant=restaurant,
-            status='Pending',
-            total_price=total_price
-        )
-        print(f"Order created: {order.id}")  # Debugging statement
-    except Exception as e:
-        print(f"Error creating order: {e}")  # Debugging statement
-        messages.error(request, "An error occurred while creating your order.")
-        return redirect('cart')
+    order = Order.objects.create(
+        user=request.user,
+        restaurant=cart.items.first().item.restaurant,
+        status='Pending',
+        total_price=total_price,
+        discount=discount,  # Add the applied discount
+    )
 
     # Transfer cart items to order items
     for cart_item in cart.items.all():
-        try:
-            OrderItem.objects.create(
-                order=order,
-                item=cart_item.item,
-                quantity=cart_item.quantity
-            )
-        except Exception as e:
-            print(f"Error creating order item: {e}")  # Debugging statement
-            messages.error(request, "An error occurred while processing your order.")
-            return redirect('cart')
+        OrderItem.objects.create(
+            order=order,
+            item=cart_item.item,
+            quantity=cart_item.quantity
+        )
 
     # Clear the cart after checkout
     cart.items.all().delete()
-    print("Cart cleared")  # Debugging statement
 
     # Redirect to the order confirmation page
     return redirect('order_confirmed', order_id=order.id)

@@ -14,6 +14,24 @@
         </div>
     {% endif %}
 
+   <!-- Discount Form -->
+{% if not request.session.discount %}
+    <form action="{% url 'apply_discount' %}" method="POST" class="mb-4">
+        {% csrf_token %}
+        <div class="input-group">
+            <input type="text" name="discount_code" class="form-control" placeholder="Enter discount code" required>
+            <div class="input-group-append">
+                <button type="submit" class="btn btn-success">Apply Discount</button>
+            </div>
+        </div>
+    </form>
+{% else %}
+    <div class="alert alert-success">
+        Discount applied: {{ request.session.discount.code }} ({{ request.session.discount.percentage }}% off)
+    </div>
+{% endif %}
+
+
     {% for restaurant, items in cart_items_by_restaurant.items %}
     <div class="card mb-4">
         <div class="card-header">
@@ -50,12 +68,15 @@
     </div>
     {% endfor %}
     <div class="d-flex justify-content-between align-items-center">
-        <h4 class="text-success">Total: ${{ total }}</h4>
-        <form action="{% url 'checkout' %}" method="POST">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-success btn-lg">Proceed to Checkout</button>
-        </form>
-    </div>
+    <h4 class="text-success">Total: ${{ total }}</h4>
+    {% if request.session.discount %}
+        <h4 class="text-success">Discounted Total: ${{ discounted_total }}</h4>
+    {% endif %}
+    <form action="{% url 'checkout' %}" method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success btn-lg">Proceed to Checkout</button>
+    </form>
+</div>
 </div>
 {% endblock %}
 
