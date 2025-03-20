@@ -4,6 +4,26 @@ from .models import Restaurant, MenuItem
 from .models import Restaurant, Review
 from .forms import ReviewForm
 from django.contrib import messages
+from restaurants.models import Discount
+
+
+def apply_discount(request):
+    if request.method == 'POST':
+        discount_code = request.POST.get('discount_code')
+
+        try:
+            discount = Discount.objects.get(code=discount_code, is_active=True)
+            # Store the discount in the session for use during checkout
+            request.session['discount'] = {
+                'id': discount.id,
+                'code': discount.code,
+                'percentage': float(discount.discount_percentage),
+            }
+            messages.success(request, f"Discount code '{discount.code}' applied successfully!")
+        except Discount.DoesNotExist:
+            messages.error(request, "Invalid or expired discount code.")
+
+        return redirect('cart')  # Redirect back to the cart page
 
 def add_review(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)
