@@ -3,7 +3,7 @@ from typing import Any
 from django.db import models
 from django.shortcuts import redirect, get_object_or_404
 from users.models import CustomUser
-from restaurants.models import MenuItem, Restaurant
+from restaurants.models import MenuItem, Restaurant, Discount
 from django.db.models import UniqueConstraint
 
 
@@ -12,6 +12,7 @@ class Order(models.Model):
     restaurant = models.ForeignKey(Restaurant, on_delete=models.CASCADE)
     status = models.CharField(max_length=20, default='Pending')
     total_price = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
+    discount = models.ForeignKey(Discount, on_delete=models.SET_NULL, null=True, blank=True)  # Add this field
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

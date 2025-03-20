@@ -1,32 +1,44 @@
+<!-- order/confirmed.html -->
 {% extends 'base.html' %}
+{% load static %}
 
 {% block content %}
-<style>
-    .alert-light-purple {
-        background-color: #b8a0d1; /* Lighter purple color */
-        color: white;
-    }
-
-    .btn-grey {
-        background-color: #6c757d; /* Grey background */
-        color: white; /* White text on the grey button */
-        border: none; /* Remove border */
-    }
-
-    .btn-grey:hover {
-        background-color: #5a6268; /* Slightly darker grey on hover */
-    }
-</style>
-
 <div class="container mt-5">
-    <h2 class="text-center mb-4">Order Confirmed</h2>
-    <div class="alert alert-light-purple">
-        <p>Your order has been placed successfully!</p>
-        <p>Order ID: {{ order.id }}</p>
-        <p>Restaurant: {{ order.restaurant.name }}</p>
-        <p>Status: {{ order.status }}</p>
-        <p>Thank you for your order! You will receive a confirmation email shortly.</p>
-        <a href="{% url 'home' %}" class="btn btn-grey">Back to Home</a>
+    <h2 class="text-center mb-4">Order Confirmation</h2>
+
+    <div class="card">
+        <div class="card-header">
+            <h5>Order Details</h5>
+        </div>
+        <div class="card-body">
+            <p><strong>Order ID:</strong> {{ order.id }}</p>
+            <p><strong>Restaurant:</strong> {{ order.restaurant.name }}</p>
+            <p><strong>Total Price:</strong> ${{ order.total_price }}</p>
+
+            <!-- Display Discount Information -->
+            {% if discount %}
+                <div class="alert alert-success">
+                    <strong>Discount Applied:</strong> {{ discount.code }} ({{ discount.discount_percentage }}% off)
+                    <br>
+                    <strong>Discount Amount:</strong> ${{ discount_amount }}
+                </div>
+            {% else %}
+                <div class="alert alert-info">
+                    No discount applied.
+                </div>
+            {% endif %}
+
+            <h5>Items:</h5>
+            <ul>
+                {% for item in order.items.all %}
+                    <li>{{ item.quantity }} x {{ item.item.name }} - ${{ item.item.price }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <div class="text-center mt-4">
+        <a href="{% url 'home' %}" class="btn btn-primary">Return to Home</a>
     </div>
 </div>
 {% endblock %}

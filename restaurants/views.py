@@ -13,7 +13,7 @@ def apply_discount(request):
 
         try:
             discount = Discount.objects.get(code=discount_code, is_active=True)
-            # Store the discount in the session for use during checkout
+            # Store the discount in the session
             request.session['discount'] = {
                 'id': discount.id,
                 'code': discount.code,
@@ -22,8 +22,10 @@ def apply_discount(request):
             messages.success(request, f"Discount code '{discount.code}' applied successfully!")
         except Discount.DoesNotExist:
             messages.error(request, "Invalid or expired discount code.")
+            if 'discount' in request.session:
+                del request.session['discount']  # Clear any invalid discount
 
-        return redirect('cart')  # Redirect back to the cart page
+        return redirect('cart')
 
 def add_review(request, restaurant_id):
     restaurant = get_object_or_404(Restaurant, id=restaurant_id)

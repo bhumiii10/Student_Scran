@@ -248,11 +248,13 @@ def checkout(request):
 
     # Apply discount if available
     discount = None
+    discount_amount = Decimal(0)  # Initialize discount amount
     if 'discount' in request.session:
         discount_data = request.session['discount']
         discount = Discount.objects.get(id=discount_data['id'])
         discount_percentage = Decimal(discount_data['percentage'])  # Convert to Decimal
-        total_price *= (1 - discount_percentage / 100)  # Apply discount
+        discount_amount = total_price * (discount_percentage / 100)  # Calculate discount amount
+        total_price -= discount_amount  # Apply discount
         del request.session['discount']  # Clear the discount from the session
 
     # Create the order
@@ -261,7 +263,7 @@ def checkout(request):
         restaurant=cart.items.first().item.restaurant,
         status='Pending',
         total_price=total_price,
-        discount=discount,  # Add the applied discount
+        discount=discount,  # Pass the discount to the Order model
     )
 
     # Transfer cart items to order items
@@ -275,7 +277,7 @@ def checkout(request):
     # Clear the cart after checkout
     cart.items.all().delete()
 
-    # Redirect to the order confirmation page
+    # Redirect to the order confirmation page with discount details
     return redirect('order_confirmed', order_id=order.id)
 
 def confirm_order(request):
@@ -305,7 +307,15 @@ def confirm_order(request):
 def order_confirmed(request, order_id):
     # Fetch the order using the ID
     order = Order.objects.get(id=order_id)
-    return render(request, 'order/confirmed.html', {'order': order})
+    discount = order.discount
+    discount_amount = order.total_price / (1 - discount.discount_percentage / 100) - order.total_price if discount else Decimal(0)
+
+    context = {
+        'order': order,
+        'discount': discount,
+        'discount_amount': discount_amount,  # Pass the discount amount to the template
+    }
+    return render(request, 'order/confirmed.html', context)
 
 def logout_view(request):
     logout(request)  # Logs out the user
