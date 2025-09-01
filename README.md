@@ -5,6 +5,12 @@ Set any password of your choice
 https://student-scran.onrender.com
 
 Apply discount code - STUDENT20
+
+
+
+
+
+
 <img width="673" height="540" alt="Screenshot 2025-09-01 at 15 57 39" src="https://github.com/user-attachments/assets/8542e9c1-a8d2-4afd-b15c-95f3810abe5a" />
 
 <img width="845" height="596" alt="Screenshot 2025-09-01 at 15 58 11" src="https://github.com/user-attachments/assets/b0338c3f-f97c-455d-bcc1-f1e21dcb407a" />
